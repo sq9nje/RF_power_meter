@@ -62,13 +62,27 @@ void mode_interrupt()
 }
 
 void update_disp(){
+  lcd.clear();
+  if (mode == 0){
+    lcd.setCursor(0,1);
+    lcd.print(">");
+  }
+  else if ( mode == 1){
+    lcd.setCursor(0,9);
+    lcd.print(">");
+  }
+  lcd.setCursor(0,10);
+  lcd.print("Att:");
+  lcd.setCursor(1,1);
+  lcd.print("Pwr:");
   
 }
 
 int measure(){
+  long pwr1=0;
   pwr_adc =  analogRead(A5);
-  pwr = map(pwr_adc, matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
-  return pwr;
+  pwr1 = map(pwr_adc, matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
+  return pwr1;
 }
 
 int encoder_update(){
@@ -84,7 +98,9 @@ int encoder_update(){
 
 
 void loop() {
-
+  pwr = measure();
+  update_disp();
+  int encoder_update();
 }
 
 
