@@ -34,7 +34,7 @@ void setup() {
   lcd.setCursor(0,1);
   lcd.print("RF Power meter");
   lcd.setCursor(1,1);
-  lcd.print("by canis_lupus");
+  lcd.print("1 MHz - 8 GHz");
   attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
   encoder.setPosition(freq_sel);
 }
@@ -66,9 +66,24 @@ int measure(){
   return analogRead(A5);
 }
 
+int encoder_update(){
+    encoder.tick();
+
+  if (mode == 0){
+    freq_sel = encoder.getPosition();
+  }
+  else if ( mode == 1){
+    att - encoder.getPosition();
+  }
+}
+
 
 void loop() {
-  encoder.tick();
 
 }
+
+
+
+
+
 
