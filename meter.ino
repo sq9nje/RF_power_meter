@@ -5,10 +5,13 @@ LiquidCrystal_I2C lcd(0x27, 6,12);
 
 
 RotaryEncoder encoder(A2, A3);
+
+
 #define ROTARYMIN 0
 int ROTARYMAX = 9;
 int mode_button=2;
 long pwr=0;
+int pwr_adc = 0;
 unsigned int att=0;
 int mode=0; // 0 for set frequency and 1 for set attenuator
 int freq_sel=0;
@@ -63,7 +66,9 @@ void update_disp(){
 }
 
 int measure(){
-  return analogRead(A5);
+  pwr_adc =  analogRead(A5);
+  pwr = map(pwr_adc, matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
+  return pwr;
 }
 
 int encoder_update(){
