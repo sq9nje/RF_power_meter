@@ -28,11 +28,12 @@ int matrix[10][4] = {
 void setup() {
   lcd.init(); 
   lcd.backlight();
-  lcd.setCursor(0,1);
-  lcd.print("RF Power meter");
+  lcd.clear();
+  lcd.setCursor(1,0);
+  lcd.print("RF Power");
   lcd.setCursor(1,1);
   lcd.print("1 MHz - 8 GHz");
-  delay(1000);
+  delay(2000);
   attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
   encoder.setPosition(freq_sel);
 }
@@ -59,18 +60,20 @@ void update_disp(){
   String pwr_s = String(pwr);
   long pwr_w = 10 * log10(pwr);
   lcd.clear();
+  lcd.setCursor(1,0);
+  lcd.print(freq[freq_sel]);
   if (mode == 0){
-    lcd.setCursor(0,1);
+    lcd.setCursor(0,0);
     lcd.print(">");
   }
   else if ( mode == 1){
-    lcd.setCursor(0,9);
+    lcd.setCursor(9,0);
     lcd.print(">");
   }
-  lcd.setCursor(0,10);
+  lcd.setCursor(10,0);
   lcd.print("Att:");
   lcd.print(att);
-  lcd.setCursor(1,1);
+  lcd.setCursor(0,1);
   lcd.print("P:");
   lcd.print(pwr_s[0]);
   lcd.print(pwr_s[1]);
@@ -116,9 +119,14 @@ int encoder_update(){
   }
 }
 
-
 void loop() {
   pwr = measure();
   update_disp();
   int encoder_update();
 }
+
+
+
+
+
+
