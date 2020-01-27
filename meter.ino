@@ -109,7 +109,7 @@ int measure(){
   float pwr1=0;
   pwr_adc =  analogRead(A6);
   pwr1 = map(pwr_adc, matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
-  return pwr1;
+  return pwr1 + att;
 }
 
 void loop() {
