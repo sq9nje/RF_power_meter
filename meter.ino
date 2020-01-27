@@ -5,7 +5,7 @@ LiquidCrystal_I2C lcd(0x27, 6,12);
 Encoder encoder(A2, 3);
 int mode_button=2;
 float pwr=0;
-int pwr_adc = 0;
+int pwr_adc[4] = {0,0,0,0};
 int att=0;
 int mode=0; // 0 for set frequency and 1 for set attenuator
 int freq_sel=0;
@@ -107,8 +107,11 @@ void update_disp(){
 
 int measure(){
   float pwr1=0;
-  pwr_adc =  analogRead(A6);
-  pwr1 = map(pwr_adc, matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
+  pwr_adc[0] =  analogRead(A6);
+  pwr_adc[1] =  analogRead(A6);
+  pwr_adc[2] =  analogRead(A6);
+  pwr_adc[4] = (pwr_adc[0] + pwr_adc[1] + pwr_adc[2])/3;
+  pwr1 = map(pwr_adc[4], matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
   return pwr1 + att;
 }
 
