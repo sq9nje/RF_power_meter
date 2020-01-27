@@ -38,6 +38,7 @@ void setup() {
   lcd.print("RF Power meter");
   lcd.setCursor(1,1);
   lcd.print("1 MHz - 8 GHz");
+  delay(1000);
   attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
   encoder.setPosition(freq_sel);
 }
@@ -62,6 +63,8 @@ void mode_interrupt()
 }
 
 void update_disp(){
+  String pwr_s = String(pwr);
+  long pwr_w = 10 * log10(pwr);
   lcd.clear();
   if (mode == 0){
     lcd.setCursor(0,1);
@@ -73,8 +76,34 @@ void update_disp(){
   }
   lcd.setCursor(0,10);
   lcd.print("Att:");
+  lcd.print(att);
   lcd.setCursor(1,1);
-  lcd.print("Pwr:");
+  lcd.print("P:");
+  lcd.print(pwr_s[0]);
+  lcd.print(pwr_s[1]);
+  lcd.print(pwr_s[2]);
+  lcd.print(pwr_s[3]);
+  lcd.print(pwr_s[4]);
+  lcd.print("dBm/");
+
+  if (pwr_w > 999 ){
+    pwr = pwr * 1000;
+    String pwr_w_s = String(pwr);  
+    lcd.print(pwr_w_s[0]);
+    lcd.print(pwr_w_s[1]);
+    lcd.print(pwr_w_s[2]);
+    lcd.print(pwr_w_s[3]);
+    lcd.print("W");
+  }
+  else {
+    String pwr_w_s = String(pwr);  
+    lcd.print(pwr_w_s[0]);
+    lcd.print(pwr_w_s[1]);
+    lcd.print(pwr_w_s[2]);
+    lcd.print(pwr_w_s[3]);
+    lcd.print("mW");
+  }
+  
   
 }
 
@@ -102,9 +131,3 @@ void loop() {
   update_disp();
   int encoder_update();
 }
-
-
-
-
-
-
