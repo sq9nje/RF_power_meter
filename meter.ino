@@ -82,7 +82,7 @@ void update_disp(){
   lcd.print(pwr_s[2]);
   lcd.print(pwr_s[3]);
 //  lcd.print(pwr_s[4]);
-  lcd.print("dBm/");
+  lcd.print("dBm ");
 
   if (pwr_w > 999 ){
     pwr_w = pwr_w / 1000;
@@ -91,6 +91,7 @@ void update_disp(){
     lcd.print(pwr_w_s[1]);
     lcd.print(pwr_w_s[2]);
     lcd.print(pwr_w_s[3]);
+    lcd.print(pwr_w_s[4]);
     lcd.print("W");
   }
   else {
