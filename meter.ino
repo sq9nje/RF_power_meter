@@ -1,10 +1,8 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h> 
-#include <RotaryEncoder.h>
+#include <Encoder.h>
 LiquidCrystal_I2C lcd(0x27, 6,12);
-RotaryEncoder encoder(A2, A3);
-#define ROTARYMIN 0
-int ROTARYMAX = 9;
+Encoder encoder(A2, 3);
 int mode_button=2;
 float pwr=0;
 int pwr_adc = 0;
@@ -37,7 +35,8 @@ void setup() {
   lcd.print("1 MHz - 8 GHz");
   delay(500);
   attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
-  encoder.setPosition(freq_sel);
+  encoder.write(freq_sel);
+  lcd.clear();
 }
 
 void mode_interrupt()
@@ -46,14 +45,12 @@ void mode_interrupt()
   
   if (mode == 0) {
     mode = 1;
-    encoder.setPosition(att);
-    ROTARYMAX = 100;
+    encoder.write(att);
     
   }
   else if (mode == 1){
     mode = 0;
-    encoder.setPosition(freq_sel);
-    ROTARYMAX = 9;
+    encoder.write(freq_sel);
   }
   attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
 }
@@ -115,27 +112,24 @@ int measure(){
   return pwr1;
 }
 
-//int encoder_update(){
-//    encoder.tick();
-//
-//  if (mode == 0){
-//    freq_sel = encoder.getPosition();
-//  }
-//  else if ( mode == 1){
-//    att = encoder.getPosition();
-//  }
-//}
-
 void loop() {
   pwr = measure();
-  update_disp();
-  encoder.tick();
+  if ((millis()%100) == 0){
+    update_disp();
+  }
 
   if (mode == 0){
-    freq_sel = encoder.getPosition();
+    freq_sel = (encoder.read()/4);
+    if (freq_sel > 10){
+      encoder.write(0);
+      freq_sel = 0;
+    }
+    else if (freq_sel < 0){
+      freq_sel = 10;
+      encoder.write(10);
+    }
   }
   else if ( mode == 1){
-    att = encoder.getPosition();
+    att = (encoder.read()/4);
   }
-  delay(300);
 }
