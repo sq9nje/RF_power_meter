@@ -114,7 +114,7 @@ int measure(){
 
 void loop() {
   pwr = measure();
-  if ((millis()%100) == 0){
+  if ((millis()%150) == 0){
     update_disp();
   }
 
