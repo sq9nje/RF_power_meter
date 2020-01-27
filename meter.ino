@@ -112,7 +112,7 @@ int encoder_update(){
     freq_sel = encoder.getPosition();
   }
   else if ( mode == 1){
-    att - encoder.getPosition();
+    att = encoder.getPosition();
   }
 }
 
