@@ -2,11 +2,7 @@
 #include <LiquidCrystal_I2C.h> 
 #include <RotaryEncoder.h>
 LiquidCrystal_I2C lcd(0x27, 6,12);
-
-
 RotaryEncoder encoder(A2, A3);
-
-
 #define ROTARYMIN 0
 int ROTARYMAX = 9;
 int mode_button=2;
@@ -28,8 +24,6 @@ int matrix[10][4] = {
   {0,1023,0,50},// for 3,4GHz
   {0,1023,0,50},// for 5,7GHz
 };
-
-
 
 void setup() {
   lcd.init(); 
@@ -58,7 +52,6 @@ void mode_interrupt()
     encoder.setPosition(freq_sel);
     ROTARYMAX = 9;
   }
-  
   attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
 }
 
@@ -103,8 +96,6 @@ void update_disp(){
     lcd.print(pwr_w_s[3]);
     lcd.print("mW");
   }
-  
-  
 }
 
 int measure(){
