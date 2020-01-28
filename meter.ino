@@ -9,7 +9,7 @@ int pwr_adc[4] = {0,0,0,0};
 int att=0;
 int mode=0; // 0 for set frequency and 1 for set attenuator
 int freq_sel=0;
-char line0[17]={""}; 
+char line0[17]; 
 char line1[17];
 char *freq[10]={"30 MHz","50 MHz","144MHz","433MHz","1.2GHz","1.8GHz","2.1GHz","2.4GHz","3.4GHz","5.7GHz"};
 int matrix[10][4] = {
@@ -57,26 +57,41 @@ void mode_interrupt()
   attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
 }
 
-void update_disp(){
-  String pwr_s = String(pwr,3);
-  float pwr_w = pow(10.0,(pwr)/10.0);
-
-  //sprintf
-  
+void update_disp1(){
   lcd.clear();
-  lcd.setCursor(1,0);
-  lcd.print(freq[freq_sel]);
+  char cur1;
+  char cur2;
+  
   if (mode == 0){
-    lcd.setCursor(0,0);
-    lcd.print(">");
+    cur1 = '>';
+    cur2 = ' ';
   }
   else if ( mode == 1){
-    lcd.setCursor(9,0);
-    lcd.print(">");
+    cur1 = ' ';
+    cur2 = '>';
   }
-  lcd.setCursor(10,0);
-  lcd.print("Att:");
-  lcd.print(att);
+  sprintf(line0,"%c %s %cAtt:%i" , cur1, freq[freq_sel], cur2, att);
+  lcd.print(line0);
+  Serial.println(line0);
+}
+
+void update_disp(){
+  String pwr_s = String(pwr,3);
+  float pwr_w = pow(10.0,(pwr)/10.0);  
+  //lcd.clear();
+  //lcd.setCursor(1,0);
+  //lcd.print(freq[freq_sel]);
+  //if (mode == 0){
+  //  lcd.setCursor(0,0);
+  //  lcd.print(">");
+  //}
+  //else if ( mode == 1){
+  //  lcd.setCursor(9,0);
+  //  lcd.print(">");
+  //}
+  //lcd.setCursor(10,0);
+  //lcd.print("Att:");
+  //lcd.print(att);
   lcd.setCursor(0,1);
 
   lcd.print(pwr_s[0]);
@@ -115,17 +130,14 @@ int measure(){
   pwr_adc[0] =  analogRead(A6);
   pwr_adc[1] =  analogRead(A6);
   pwr_adc[2] =  analogRead(A6);
-  pwr_adc[4] = (pwr_adc[0] + pwr_adc[1] + pwr_adc[2])/3;
-  pwr1 = map(pwr_adc[4], matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
+  pwr_adc[3] = (pwr_adc[0] + pwr_adc[1] + pwr_adc[2])/3;
+  pwr1 = map(pwr_adc[3], matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
   return pwr1 + att;
 }
 
 void loop() {
   pwr = measure();
-  if ((millis()%150) == 0){
-    update_disp();
-  }
-
+  
   if (mode == 0){
     freq_sel = (encoder.read()/4);
     if (freq_sel > 9){
@@ -143,4 +155,10 @@ void loop() {
       att = 0;
     }
   }
+  if ((millis()%150) == 0){
+  update_disp1();
+  //update_disp();
+  //delay(10);
+  }
+  
 }
