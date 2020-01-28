@@ -1,3 +1,6 @@
+//License: CC-BY-NC-SA
+//Author: Szymon Reiter "canis_lupus"
+
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h> 
 #include <Encoder.h>
@@ -32,10 +35,13 @@ void setup() {
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(1,0);
-  lcd.print("RF Power");
-  lcd.setCursor(1,1);
-  lcd.print("1 MHz - 8 GHz");
-  delay(500);
+  lcd.print("RF Power meter");
+  lcd.setCursor(2,1);
+  lcd.print("canis_lupus");
+  delay(1000);
+  lcd.setCursor(2,1);
+  lcd.print("1MHz - 8GHz");
+  delay(1500);
   attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
   encoder.write(freq_sel);
   lcd.clear();
@@ -58,7 +64,7 @@ void mode_interrupt()
 }
 
 void update_disp1(){
-  lcd.clear();
+  
   char cur1;
   char cur2;
   
@@ -74,7 +80,6 @@ void update_disp1(){
 
   String pwr_s = String(pwr,5);
   float pwr_w = pow(10.0,(pwr)/10.0);
-
   if (pwr_w > 999 ){
     pwr_w = pwr_w / 1000;
     String pwr_w_s = String(pwr_w,4);  
@@ -84,17 +89,39 @@ void update_disp1(){
     String pwr_w_s = String(pwr_w,3);  
     sprintf(line1,"%c%c%c%c%cdBm %c%c%c%c%cmW" ,pwr_s[0], pwr_s[1], pwr_s[2], pwr_s[3], pwr_s[4], pwr_w_s[0], pwr_w_s[1], pwr_w_s[2], pwr_w_s[3], pwr_w_s[4] );
   }
-  
+  //lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(line0);
+}
+
+void update_disp2(){
+  char cur1;
+  char cur2;
+  if (mode == 0){
+    cur1 = '>';
+    cur2 = ' ';
+  }
+  else if ( mode == 1){
+    cur1 = ' ';
+    cur2 = '>';
+  }
+  sprintf(line0,"%c %s %cAtt:%i" , cur1, freq[freq_sel], cur2, att);
+
+  String pwr_s = String(pwr,5);
+  float pwr_w = pow(10.0,(pwr)/10.0);
+  if (pwr_w > 999 ){
+    pwr_w = pwr_w / 1000;
+    String pwr_w_s = String(pwr_w,4);  
+    sprintf(line1,"%c%c%c%c%cdBm %c%c%c%c%c%cW" ,pwr_s[0], pwr_s[1], pwr_s[2], pwr_s[3], pwr_s[4], pwr_w_s[0], pwr_w_s[1], pwr_w_s[2], pwr_w_s[3], pwr_w_s[4], pwr_w_s[5] );
+  }
+  else {
+    String pwr_w_s = String(pwr_w,3);  
+    sprintf(line1,"%c%c%c%c%cdBm %c%c%c%c%cmW" ,pwr_s[0], pwr_s[1], pwr_s[2], pwr_s[3], pwr_s[4], pwr_w_s[0], pwr_w_s[1], pwr_w_s[2], pwr_w_s[3], pwr_w_s[4] );
+  }
+  lcd.clear();
   lcd.print(line0);
   lcd.setCursor(0,1);
   lcd.print(line1);
-}
-
-void update_disp(){
-  String pwr_s = String(pwr,3);
-  float pwr_w = pow(10.0,(pwr)/10.0);  
-  
-  
   Serial.print(pwr);
   Serial.print(";");
   Serial.println(pwr_w);
@@ -112,7 +139,6 @@ int measure(){
 
 void loop() {
   pwr = measure();
-  
   if (mode == 0){
     freq_sel = (encoder.read()/4);
     if (freq_sel > 9){
@@ -130,9 +156,10 @@ void loop() {
       att = 0;
     }
   }
-  if ((millis()%500) == 0){
-  update_disp1();
-  //delay(10);
+  if ((millis()%400) == 0){
+    update_disp2();
   }
-  
+  if ((millis()%100) == 0){
+    update_disp1();
+  }
 }
