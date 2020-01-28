@@ -47,12 +47,12 @@ void mode_interrupt()
   
   if (mode == 0) {
     mode = 1;
-    encoder.write(att);
+    encoder.write(att*4);
     
   }
   else if (mode == 1){
     mode = 0;
-    encoder.write(freq_sel);
+    encoder.write(freq_sel*4);
   }
   attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
 }
@@ -71,55 +71,30 @@ void update_disp1(){
     cur2 = '>';
   }
   sprintf(line0,"%c %s %cAtt:%i" , cur1, freq[freq_sel], cur2, att);
+
+  String pwr_s = String(pwr,5);
+  float pwr_w = pow(10.0,(pwr)/10.0);
+
+  if (pwr_w > 999 ){
+    pwr_w = pwr_w / 1000;
+    String pwr_w_s = String(pwr_w,4);  
+    sprintf(line1,"%c%c%c%c%cdBm %c%c%c%c%c%cW" ,pwr_s[0], pwr_s[1], pwr_s[2], pwr_s[3], pwr_s[4], pwr_w_s[0], pwr_w_s[1], pwr_w_s[2], pwr_w_s[3], pwr_w_s[4], pwr_w_s[5] );
+  }
+  else {
+    String pwr_w_s = String(pwr_w,3);  
+    sprintf(line1,"%c%c%c%c%cdBm %c%c%c%c%cmW" ,pwr_s[0], pwr_s[1], pwr_s[2], pwr_s[3], pwr_s[4], pwr_w_s[0], pwr_w_s[1], pwr_w_s[2], pwr_w_s[3], pwr_w_s[4] );
+  }
+  
   lcd.print(line0);
-  Serial.println(line0);
+  lcd.setCursor(0,1);
+  lcd.print(line1);
 }
 
 void update_disp(){
   String pwr_s = String(pwr,3);
   float pwr_w = pow(10.0,(pwr)/10.0);  
-  //lcd.clear();
-  //lcd.setCursor(1,0);
-  //lcd.print(freq[freq_sel]);
-  //if (mode == 0){
-  //  lcd.setCursor(0,0);
-  //  lcd.print(">");
-  //}
-  //else if ( mode == 1){
-  //  lcd.setCursor(9,0);
-  //  lcd.print(">");
-  //}
-  //lcd.setCursor(10,0);
-  //lcd.print("Att:");
-  //lcd.print(att);
-  lcd.setCursor(0,1);
-
-  lcd.print(pwr_s[0]);
-  lcd.print(pwr_s[1]);
-  lcd.print(pwr_s[2]);
-  lcd.print(pwr_s[3]);
-  lcd.print(pwr_s[4]);
-  lcd.print("dBm ");
-
-  if (pwr_w > 999 ){
-    pwr_w = pwr_w / 1000;
-    String pwr_w_s = String(pwr_w);  
-    lcd.print(pwr_w_s[0]);
-    lcd.print(pwr_w_s[1]);
-    lcd.print(pwr_w_s[2]);
-    lcd.print(pwr_w_s[3]);
-    lcd.print(pwr_w_s[4]);
-    lcd.print("W");
-  }
-  else {
-    String pwr_w_s = String(pwr_w,3);  
-    lcd.print(pwr_w_s[0]);
-    lcd.print(pwr_w_s[1]);
-    lcd.print(pwr_w_s[2]);
-    lcd.print(pwr_w_s[3]);
-    lcd.print(pwr_w_s[4]);
-    lcd.print("mW");
-  }
+  
+  
   Serial.print(pwr);
   Serial.print(";");
   Serial.println(pwr_w);
@@ -155,10 +130,8 @@ void loop() {
       att = 0;
     }
   }
-  if ((millis()%150) == 0){
+  if ((millis()%250) == 0){
   update_disp1();
-  //update_disp();
   //delay(10);
   }
-  
 }
