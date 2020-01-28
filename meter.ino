@@ -9,6 +9,8 @@ int pwr_adc[4] = {0,0,0,0};
 int att=0;
 int mode=0; // 0 for set frequency and 1 for set attenuator
 int freq_sel=0;
+char line0[17]={""}; 
+char line1[17];
 char *freq[10]={"30 MHz","50 MHz","144MHz","433MHz","1.2GHz","1.8GHz","2.1GHz","2.4GHz","3.4GHz","5.7GHz"};
 int matrix[10][4] = {
   {0,1023,-30,15},// for 30MHz
@@ -58,6 +60,9 @@ void mode_interrupt()
 void update_disp(){
   String pwr_s = String(pwr,3);
   float pwr_w = pow(10.0,(pwr)/10.0);
+
+  //sprintf
+  
   lcd.clear();
   lcd.setCursor(1,0);
   lcd.print(freq[freq_sel]);
