@@ -130,8 +130,9 @@ void loop() {
       att = 0;
     }
   }
-  if ((millis()%250) == 0){
+  if ((millis()%500) == 0){
   update_disp1();
   //delay(10);
   }
+  
 }
