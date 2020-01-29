@@ -49,7 +49,7 @@ void setup() {
 
 void mode_interrupt()
 {
-  detachInterrupt(mode_interrupt);
+  ddetachInterrupt(digitalPinToInterrupt(mode_button));
   
   if (mode == 0) {
     mode = 1;
