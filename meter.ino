@@ -4,9 +4,18 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h> 
 #include <Encoder.h>
-LiquidCrystal_I2C lcd(0x27, 6,12);
-Encoder encoder(A2, 3);
-int mode_button=2;
+
+#define LCD_ADDRESS     0x27
+#define ENCODER_A_PIN   A2
+#define ENCODER_B_PIN   3
+#define ENCODER_BUTTON  2
+#define PWR_IN          A6
+
+#define N_AVG           4
+
+LiquidCrystal_I2C lcd(LCD_ADDRESS, 16,2);
+Encoder encoder(ENCODER_A_PIN, ENCODER_B_PIN);
+
 float pwr=0;
 int pwr_adc[4] = {0,0,0,0};
 int att=0;
@@ -30,7 +39,7 @@ int matrix[10][4] = {
 
 void setup() {
   Serial.begin(19200);
-  pinMode(mode_button, INPUT_PULLUP);
+  pinMode(ENCODER_BUTTON, INPUT_PULLUP);
   lcd.init(); 
   lcd.backlight();
   lcd.clear();
@@ -42,7 +51,7 @@ void setup() {
   lcd.setCursor(2,1);
   lcd.print("1MHz - 8GHz");
   delay(1500);
-  attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_BUTTON), mode_interrupt, RISING);
   encoder.write(freq_sel);
   lcd.clear();
 }
@@ -60,7 +69,7 @@ void mode_interrupt()
     mode = 0;
     encoder.write(freq_sel*4);
   }
-  attachInterrupt(digitalPinToInterrupt(mode_button), mode_interrupt, RISING);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_BUTTON), mode_interrupt, RISING);
 }
 
 void update_disp1(){
@@ -116,11 +125,15 @@ void update_disp2(){
 
 int measure(){
   float pwr1=0;
-  pwr_adc[0] =  analogRead(A6);
-  pwr_adc[1] =  analogRead(A6);
-  pwr_adc[2] =  analogRead(A6);
-  pwr_adc[3] = (pwr_adc[0] + pwr_adc[1] + pwr_adc[2])/3;
-  pwr1 = map(pwr_adc[3], matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
+  uint8_t i;
+  uint16_t pwr = 0;
+
+  for(i=0;i<N_AVG;i++) {
+    pwr += analogRead(PWR_IN);
+  }
+  pwr = pwr / N_AVG;
+
+  pwr1 = map(pwr[3], matrix[freq_sel][0], matrix[freq_sel][1], matrix[freq_sel][2], matrix[freq_sel][3]);
   return pwr1 + att;
 }
 
